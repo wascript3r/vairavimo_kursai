@@ -27,10 +27,11 @@
 						<li><a href="index.php?module=brand&action=list" title="Markės"<?php if($module == 'brand') { echo 'class="active"'; } ?>>Markės</a></li>
 						<li><a href="index.php?module=branch&action=list" title="Modeliai"<?php if($module == 'branch') { echo 'class="active"'; } ?>>Filialai</a></li>
 						<li><a href="index.php?module=instructor&action=list" title="Instruktoriai"<?php if($module == 'instructor') { echo 'class="active"'; } ?>>Instruktoriai</a></li>
+						<li><a href="index.php?module=student&action=list" title="Moksleiviai"<?php if($module == 'student') { echo 'class="active"'; } ?>>Moksleiviai</a></li>
 					</ul>
-					<ul class="float-right">
+					<!--<ul class="float-right">
 						<li><a href="index.php?module=report&action=list" title="Ataskaitos"<?php if($module == 'report') { echo 'class="active"'; } ?>>Ataskaitos</a></li>
-					</ul>
+					</ul>-->
 				</div>
 				<div id="contentMain">
 					<?php
