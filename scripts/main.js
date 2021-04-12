@@ -4,13 +4,13 @@ $(window).ready(function (){
         // pagrindinis vaikinių įrašų konteineris
         childRowContainer = $(this).parent().prev(".childRowContainer");
         
-        if(childRowContainer.children(".childRow:last").hasClass("hidden")) { // jeigu nėra nei vienos eilutės
-            // pašaliname paslėptos eilutės požymius
-            childRowContainer.children(".childRow:last, .labelLeft, .labelRight").removeClass("hidden");
-            childRowContainer.children(".childRow:last").children("input[type=text], select").prop("disabled", false);
-        } else {
+        // if(childRowContainer.children(".childRow:first").hasClass("hidden")) { // jeigu nėra nei vienos eilutės
+        //     // pašaliname paslėptos eilutės požymius
+        //     childRowContainer.children(".childRow:first, .labelLeft, .labelRight").removeClass("hidden");
+        //     childRowContainer.children(".childRow:first").children("input[type=text], select").prop("disabled", false);
+        // } else {
             // klonuojame vaikinio įrašo eilutę
-            rowClone = childRowContainer.children(".childRow:last").clone(true, true);
+            rowClone = childRowContainer.children(".childRow:first").clone(true, true);
             var test = 10;
 			
             // pašaliname klonuotų įvedimo elementų reikšmes
@@ -18,7 +18,7 @@ $(window).ready(function (){
             $(rowClone).children("select").find('option').removeAttr("selected");
             
             // pašaliname išjungtų elementų požymius
-            $(rowClone).children("input[type=text], select").removeClass('disabledInput');
+            $(rowClone).children("input[type=text], input[type=hidden], select").removeClass('disabledInput');
             $(rowClone).children(".removeChild").removeClass('hidden');
             $(rowClone).children("input.isDisabledForEditing").val(0);
             
@@ -28,7 +28,10 @@ $(window).ready(function (){
             // sukuriame pagalbinį <div class="float-clear"></div> elementą formatavimui
             clearDiv = $('<div />', {"class": 'float-clear'});
             clearDiv.appendTo(childRowContainer);
-        }
+
+            childRowContainer.children(".childRow:last, .labelLeft, .labelRight").removeClass("hidden");
+            childRowContainer.children(".childRow:last").children("input[type=text], input[type=hidden], select").prop("disabled", false);
+        // }
         
         return false;
     })
@@ -68,8 +71,15 @@ $(window).ready(function (){
 });
 
 function showConfirmDialog(module, removeId) {
-    var r = confirm("Ar tikrai norite pašalinti!");
+    var r = confirm("Ar tikrai norite pašalinti?");
     if (r === true) {
         window.location.replace("index.php?module=" + module + "&action=delete&id=" + removeId);
+    }
+}
+
+function showConfirmDialog2(module, branchId, removeId) {
+    var r = confirm("Ar tikrai norite pašalinti?");
+    if (r === true) {
+        window.location.replace("index.php?module=" + module + "&action=delete&branchId=" + branchId + "&id=" + removeId);
     }
 }

@@ -1,23 +1,14 @@
 <?php
 
-include 'libraries/cars.class.php';
-$carsObj = new cars();
+include 'libraries/branches.class.php';
+$branchesObj = new branches();
 
 if(!empty($id)) {
-	// patikriname, ar automobilis neįtrauktas į sutartis
-	$count = $carsObj->getContractCountOfCar($id);
-
-	$removeErrorParameter = '';
-	if($count == 0) {
-		// šaliname automobilį
-		$carsObj->deleteCar($id);
-	} else {
-		// nepašalinome, nes automobilis įtrauktas bent į vieną sutartį, rodome klaidos pranešimą
-		$removeErrorParameter = '&remove_error=1';
-	}
+	$branchesObj->deleteLessons($id);
+	$branchesObj->deleteCar($id);
 
 	// nukreipiame į automobilių puslapį
-	common::redirect("index.php?module={$module}&action=list{$removeErrorParameter}");
+	common::redirect("index.php?module=branch&action=edit&id=" . $_GET["branchId"]);
 	die();
 }
 
