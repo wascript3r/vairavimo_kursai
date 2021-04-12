@@ -38,81 +38,92 @@ if(!empty($_POST['submit'])) {
 	// sukuriame validatoriaus objektą
 	include 'utils/validator.class.php';
 	$validator = new validator($validations, $required, $maxLengths);
+	$data = $_POST;
 
 	if($validator->validate($_POST)) {
 		// suformuojame laukų reikšmių masyvą SQL užklausai
 		$dataPrepared = $validator->preparePostFieldsForSQL();
 
-		// įrašome naują įrašą
-		$newId = $branchesObj->insertBranch($dataPrepared);
+		if (isset($dataPrepared['valstybiniai_nr']) && sizeof($dataPrepared['valstybiniai_nr']) > 0) {
+		    foreach ($dataPrepared['valstybiniai_nr'] as $key => $val) {
+		        $car = $branchesObj->getCar($val);
+		        if (isset($car['valstybinis_nr'])) {
+                    $formErrors = "Vienas ar daugiau automobilių valstybinių numerių jau egzistuoja.";
+                    break;
+                }
+            }
+        }
 
-		$branchesObj->updateCars($dataPrepared, $newId);
+		if ($formErrors == null) {
+            // įrašome naują įrašą
+            $newId = $branchesObj->insertBranch($dataPrepared);
 
-		// nukreipiame į markių puslapį
-//		common::redirect("index.php?module={$module}&action=list");
-//		die();
+            $branchesObj->updateCars($dataPrepared, $newId);
+
+            // nukreipiame į markių puslapį
+            common::redirect("index.php?module={$module}&action=list");
+            die();
+        }
 	} else {
 		// gauname klaidų pranešimą
 		$formErrors = $validator->getErrorHTML();
-		// gauname įvestus laukus
-		$data = $_POST;
-
-		if (isset($_POST['valstybiniai_nr']) && sizeof($_POST['valstybiniai_nr']) > 0) {
-			$i = 0;
-			foreach($_POST['valstybiniai_nr'] as $key => $val) {
-				$data['filialo_automobiliai'][$i]['valstybinis_nr'] = $val;
-				$i++;
-			}
-		}
-
-		if (isset($_POST['metai']) && sizeof($_POST['metai']) > 0) {
-			$i = 0;
-			foreach($_POST['metai'] as $key => $val) {
-				$data['filialo_automobiliai'][$i]['metai'] = $val;
-				$i++;
-			}
-		}
-
-		if (isset($_POST['ridos']) && sizeof($_POST['ridos']) > 0) {
-			$i = 0;
-			foreach($_POST['ridos'] as $key => $val) {
-				$data['filialo_automobiliai'][$i]['rida'] = $val;
-				$i++;
-			}
-		}
-
-		if (isset($_POST['isigijimo_datos']) && sizeof($_POST['isigijimo_datos']) > 0) {
-			$i = 0;
-			foreach($_POST['isigijimo_datos'] as $key => $val) {
-				$data['filialo_automobiliai'][$i]['isigijimo_data'] = $val;
-				$i++;
-			}
-		}
-
-		if (isset($_POST['pavaru_dezes']) && sizeof($_POST['pavaru_dezes']) > 0) {
-			$i = 0;
-			foreach($_POST['pavaru_dezes'] as $key => $val) {
-				$data['filialo_automobiliai'][$i]['pavaru_deze'] = $val;
-				$i++;
-			}
-		}
-
-		if (isset($_POST['markes']) && sizeof($_POST['markes']) > 0) {
-			$i = 0;
-			foreach($_POST['markes'] as $key => $val) {
-				$data['filialo_automobiliai'][$i]['fk_MARKE_id'] = $val;
-				$i++;
-			}
-		}
-
-		if (isset($_POST['insertions']) && sizeof($_POST['insertions']) > 0) {
-			$i = 0;
-			foreach($_POST['insertions'] as $key => $val) {
-				$data['filialo_automobiliai'][$i]['inserted'] = $val;
-				$i++;
-			}
-		}
 	}
+
+	if (isset($_POST['valstybiniai_nr']) && sizeof($_POST['valstybiniai_nr']) > 0) {
+        $i = 0;
+        foreach($_POST['valstybiniai_nr'] as $key => $val) {
+            $data['filialo_automobiliai'][$i]['valstybinis_nr'] = $val;
+            $i++;
+        }
+    }
+
+    if (isset($_POST['metai']) && sizeof($_POST['metai']) > 0) {
+        $i = 0;
+        foreach($_POST['metai'] as $key => $val) {
+            $data['filialo_automobiliai'][$i]['metai'] = $val;
+            $i++;
+        }
+    }
+
+    if (isset($_POST['ridos']) && sizeof($_POST['ridos']) > 0) {
+        $i = 0;
+        foreach($_POST['ridos'] as $key => $val) {
+            $data['filialo_automobiliai'][$i]['rida'] = $val;
+            $i++;
+        }
+    }
+
+    if (isset($_POST['isigijimo_datos']) && sizeof($_POST['isigijimo_datos']) > 0) {
+        $i = 0;
+        foreach($_POST['isigijimo_datos'] as $key => $val) {
+            $data['filialo_automobiliai'][$i]['isigijimo_data'] = $val;
+            $i++;
+        }
+    }
+
+    if (isset($_POST['pavaru_dezes']) && sizeof($_POST['pavaru_dezes']) > 0) {
+        $i = 0;
+        foreach($_POST['pavaru_dezes'] as $key => $val) {
+            $data['filialo_automobiliai'][$i]['pavaru_deze'] = $val;
+            $i++;
+        }
+    }
+
+    if (isset($_POST['markes']) && sizeof($_POST['markes']) > 0) {
+        $i = 0;
+        foreach($_POST['markes'] as $key => $val) {
+            $data['filialo_automobiliai'][$i]['fk_MARKE_id'] = $val;
+            $i++;
+        }
+    }
+
+    if (isset($_POST['insertions']) && sizeof($_POST['insertions']) > 0) {
+        $i = 0;
+        foreach($_POST['insertions'] as $key => $val) {
+            $data['filialo_automobiliai'][$i]['inserted'] = $val;
+            $i++;
+        }
+    }
 }
 
 // įtraukiame šabloną

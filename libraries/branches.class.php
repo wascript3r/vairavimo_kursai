@@ -25,6 +25,15 @@ class branches {
 		return $data[0];
 	}
 
+	public function getCar($carId) {
+		$query = "  SELECT *
+					FROM {$this->automobiliai_lentele}
+					WHERE `valstybinis_nr`='{$carId}'";
+		$data = mysql::select($query);
+
+		return $data[0];
+	}
+
 	public function getBranchList($limit = null, $offset = null) {
 		$limitOffsetString = "";
 		if(isset($limit)) {
