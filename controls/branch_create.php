@@ -20,7 +20,7 @@ if(!empty($_POST['submit'])) {
 	// nustatome laukų validatorių tipus
 	$validations = array (
 		'adresas' => 'anything',
-		'kontaktinis_tel' => 'anything'
+		'kontaktinis_tel' => 'phone'
     );
 
 	// sukuriame validatoriaus objektą

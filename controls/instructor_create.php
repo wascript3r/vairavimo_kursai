@@ -1,5 +1,8 @@
 <?php
 
+include 'libraries/instructors.class.php';
+$instructorsObj = new instructors();
+
 include 'libraries/branches.class.php';
 $branchesObj = new branches();
 
@@ -7,20 +10,32 @@ $formErrors = null;
 $data = array();
 
 // nustatome privalomus laukus
-$required = array('adresas', 'kontaktinis_tel');
+$required = array('vardas', 'pavarde', 'el_pastas', 'tel_nr', 'adresas', 'aprasymas', 'darbo_pradzios_data', 'vairavimo_stazas', 'fk_FILIALAS_id');
 
 // maksimalūs leidžiami laukų ilgiai
 $maxLengths = array (
+	'vardas' => 25,
+	'pavarde' => 25,
+	'el_pastas' => 100,
+	'tel_nr' => 20,
 	'adresas' => 100,
-	'kontaktinis_tel' => 20
+	'aprasymas' => 255,
+	'vairavimo_stazas' => 6
 );
 
 // paspaustas išsaugojimo mygtukas
 if(!empty($_POST['submit'])) {
 	// nustatome laukų validatorių tipus
 	$validations = array (
+		'vardas' => 'alfanum',
+		'pavarde' => 'alfanum',
+		'el_pastas' => 'email',
+		'tel_nr' => 'phone',
 		'adresas' => 'anything',
-		'kontaktinis_tel' => 'phone'
+		'aprasymas' => 'anything',
+		'darbo_pradzios_data' => 'date',
+		'vairavimo_stazas' => 'int',
+		'fk_FILIALAS_id' => 'int',
     );
 
 	// sukuriame validatoriaus objektą
@@ -31,8 +46,8 @@ if(!empty($_POST['submit'])) {
 		// suformuojame laukų reikšmių masyvą SQL užklausai
 		$dataPrepared = $validator->preparePostFieldsForSQL();
 
-		// atnaujiname duomenis
-		$branchesObj->updateBranch($dataPrepared);
+		// įrašome naują įrašą
+		$instructorsObj->insertInstructor($dataPrepared);
 
 		// nukreipiame į markių puslapį
 		common::redirect("index.php?module={$module}&action=list");
@@ -43,12 +58,9 @@ if(!empty($_POST['submit'])) {
 		// gauname įvestus laukus
 		$data = $_POST;
 	}
-} else {
-	// išrenkame elemento duomenis ir jais užpildome formos laukus.
-	$data = $branchesObj->getBranch($id);
 }
 
 // įtraukiame šabloną
-include 'templates/branch_form.tpl.php';
+include 'templates/instructor_form.tpl.php';
 
 ?>
