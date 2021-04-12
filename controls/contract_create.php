@@ -3,23 +3,26 @@
 include 'libraries/contracts.class.php';
 $contractsObj = new contracts();
 
-include 'libraries/services.class.php';
-$servicesObj = new services();
+include 'libraries/branches.class.php';
+$branchesObj = new branches();
 
-include 'libraries/cars.class.php';
-$carsObj = new cars();
+include 'libraries/students.class.php';
+$studentsObj = new students();
 
-include 'libraries/employees.class.php';
-$employeesObj = new employees();
+include 'libraries/gear_boxes.class.php';
+$gearBoxesObj = new gearBoxes();
 
-include 'libraries/customers.class.php';
-$customersObj = new customers();
+include 'libraries/contract_types.class.php';
+$contractTypesObj = new contractTypes();
+
+include 'libraries/contract_status.class.php';
+$contractStatusObj = new contractStatus();
 
 $formErrors = null;
 $data = array();
 
 // nustatome privalomus laukus
-$required = array('nr', 'sutarties_data', 'nuomos_data_laikas', 'planuojama_grazinimo_data_laikas', 'pradine_rida', 'kaina', 'degalu_kiekis_paimant', 'busena', 'fk_klientas', 'fk_darbuotojas', 'fk_automobilis', 'fk_grazinimo_vieta', 'fk_paemimo_vieta', 'kiekiai');
+$required = array('sudarymo_data', 'suma', 'tipas', 'busena', 'fk_FILIALAS_id', 'fk_MOKSLEIVIS_id');
 
 // vartotojas paspaudė išsaugojimo mygtuką
 if(!empty($_POST['submit'])) {
@@ -27,46 +30,34 @@ if(!empty($_POST['submit'])) {
 
 	// nustatome laukų validatorių tipus
 	$validations = array (
-		'nr' => 'positivenumber',
-		'sutarties_data' => 'date',
-		'nuomos_data_laikas' => 'datetime',
-		'planuojama_grazinimo_data_laikas' => 'datetime',
-		'faktine_grazinimo_data_laikas' => 'datetime',
-		'pradine_rida' => 'int',
-		'galine_rida' => 'int',
-		'kaina' => 'price',
-		'degalu_kiekis_paimant' => 'int',
-		'dagalu_kiekis_grazinus' => 'int',
-		'busena' => 'positivenumber',
-		'fk_klientas' => 'alfanum',
-		'fk_darbuotojas' => 'alfanum',
-		'fk_automobilis' => 'positivenumber',
-		'fk_grazinimo_vieta' => 'positivenumber',
-		'fk_paemimo_vieta' => 'positivenumber',
-		'kiekiai' => 'int');
+		'sudarymo_data' => 'datetime',
+		'pasirasymo_data' => 'datetime',
+		'suma' => 'price',
+		'tipas' => 'int',
+		'busena' => 'int',
+		'automobilio_pavaru_deze' => 'int',
+		'fk_FILIALAS_id' => 'int',
+		'fk_MOKSLEIVIS_id' => 'int'
+    );
 
 	// sukuriame laukų validatoriaus objektą
 	$validator = new validator($validations, $required);
+	$data = $_POST;
 
 	// laukai įvesti be klaidų
 	if($validator->validate($_POST)) {
-		// suformuojame laukų reikšmių masyvą SQL užklausai
-		$dataPrepared = $validator->preparePostFieldsForSQL();
-
-		// patikriname, ar nėra sutarčių su tokiu pačiu numeriu
-		$tmp = $contractsObj->getContract($dataPrepared['nr']);
-
-		if(isset($tmp['nr'])) {
+		if (isset($data['automobilio_pavaru_deze']) && $data['automobilio_pavaru_deze'] != '' && $data['tipas'] == '1') {
+            // sudarome klaidų pranešimą
+            $formErrors = "Negalima pasirinkti automobilio pavarų dėžės teoriniams mokymams.";
+        } elseif ((!isset($data['automobilio_pavaru_deze']) || $data['automobilio_pavaru_deze'] == '') && $data['tipas'] != '1') {
 			// sudarome klaidų pranešimą
-			$formErrors = "Sutartis su įvestu numeriu jau egzistuoja.";
-			// laukų reikšmių kintamajam priskiriame įvestų laukų reikšmes
-			$data = $_POST;
+			$formErrors = "Turite pasirinkti automobilio pavarų dėžę.";
 		} else {
+		    // suformuojame laukų reikšmių masyvą SQL užklausai
+            $dataPrepared = $validator->preparePostFieldsForSQL();
+
 			// įrašome naują sutartį
 			$contractsObj->insertContract($dataPrepared);
-
-			// įrašome užsakytas paslaugas
-			$contractsObj->updateOrderedServices($dataPrepared);
 		}
 		
 		// nukreipiame vartotoją į sutarčių puslapį
@@ -77,16 +68,6 @@ if(!empty($_POST['submit'])) {
 	} else {
 		// gauname klaidų pranešimą
 		$formErrors = $validator->getErrorHTML();
-
-		// laukų reikšmių kintamajam priskiriame įvestų laukų reikšmes
-		$data = $_POST;
-		if(isset($_POST['kiekiai']) && sizeof($_POST['kiekiai']) > 0) {
-			$i = 0;
-			foreach($_POST['kiekiai'] as $key => $val) {
-				$data['uzsakytos_paslaugos'][$i]['kiekis'] = $val;
-				$i++;
-			}
-		}
 	}
 }
 
