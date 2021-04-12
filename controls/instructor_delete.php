@@ -1,40 +1,12 @@
 <?php
 
-include 'libraries/branches.class.php';
-$branchesObj = new branches();
+include 'libraries/instructors.class.php';
+$instructorsObj = new instructors();
 
 if(!empty($id)) {
-    // Car
-	$count = $branchesObj->getCarCountOfBranch($id);
-
-	$removeErrorParameter = '';
-	if($count != 0) {
-	    $removeErrorParameter = '&remove_error1=1';
-		common::redirect("index.php?module={$module}&action=list{$removeErrorParameter}");
-        die();
-	}
-
-	// Instructor
-	$count = $branchesObj->getInstructorCountOfBranch($id);
-
-	$removeErrorParameter = '';
-	if($count != 0) {
-	    $removeErrorParameter = '&remove_error2=1';
-		common::redirect("index.php?module={$module}&action=list{$removeErrorParameter}");
-        die();
-	}
-
-	// Contract
-	$count = $branchesObj->getContractCountOfBranch($id);
-
-	$removeErrorParameter = '';
-	if($count != 0) {
-	    $removeErrorParameter = '&remove_error3=1';
-		common::redirect("index.php?module={$module}&action=list{$removeErrorParameter}");
-        die();
-	}
-
-	$branchesObj->deleteBranch($id);
+	$instructorsObj->deleteReviews($id);
+	$instructorsObj->deleteLessons($id);
+	$instructorsObj->deleteInstructor($id);
 
 	common::redirect("index.php?module={$module}&action=list");
     die();
