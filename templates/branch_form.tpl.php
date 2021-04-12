@@ -45,6 +45,7 @@
                     <input type="text" name="ridos[]" class="textbox textbox-70" value="" disabled="disabled" />
                     <input type="text" name="isigijimo_datos[]" class="textbox date textbox-70" value="" disabled="disabled" />
                     <select class="elementSelector" name="pavaru_dezes[]" disabled="disabled">
+                        <option value=""></option>
                         <?php
                             $gearBoxes = $gearBoxesObj->getGearBoxList();
                             foreach($gearBoxes as $key => $val) {
@@ -53,6 +54,7 @@
                         ?>
                     </select>
                     <select class="elementSelector" name="markes[]" disabled="disabled">
+                        <option value=""></option>
                         <?php
                             $brands = $brandsObj->getBrandList();
                             foreach($brands as $key => $val) {
@@ -75,6 +77,7 @@
 							<input type="text" name="ridos[]" class="textbox textbox-70" value="<?php echo isset($val['rida']) ? $val['rida'] : ''; ?>" />
 							<input type="text" name="isigijimo_datos[]" class="textbox date textbox-70" value="<?php echo isset($val['isigijimo_data']) ? $val['isigijimo_data'] : ''; ?>" />
                             <select class="elementSelector" name="pavaru_dezes[]">
+                                <option value=""></option>
                                 <?php
                                     $gearBoxes = $gearBoxesObj->getGearBoxList();
                                     foreach($gearBoxes as $key2 => $val2) {
@@ -87,6 +90,7 @@
                                 ?>
                             </select>
                             <select class="elementSelector" name="markes[]">
+                                <option value=""></option>
 							<?php
                                 $brands = $brandsObj->getBrandList();
                                 foreach($brands as $key2 => $val2) {

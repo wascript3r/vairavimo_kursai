@@ -83,3 +83,10 @@ function showConfirmDialog2(module, branchId, removeId) {
         window.location.replace("index.php?module=" + module + "&action=delete&branchId=" + branchId + "&id=" + removeId);
     }
 }
+
+function showConfirmDialog3(module, instructorId, removeId) {
+    var r = confirm("Ar tikrai norite pašalinti?");
+    if (r === true) {
+        window.location.replace("index.php?module=" + module + "&action=delete&instructorId=" + instructorId + "&id=" + removeId);
+    }
+}

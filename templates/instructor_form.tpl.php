@@ -73,6 +73,97 @@
 				</select>
 			</p>
 		</fieldset>
+
+        <fieldset style="width: 115%">
+			<legend>Atsiliepimai</legend>
+			<div class="childRowContainer">
+				<div class="labelLeft<?php if(empty($data['instruktoriaus_atsiliepimai']) || sizeof($data['instruktoriaus_atsiliepimai']) == 0) echo ' hidden'; ?>">Moksleivis</div>
+				<div class="labelLeft<?php if(empty($data['instruktoriaus_atsiliepimai']) || sizeof($data['instruktoriaus_atsiliepimai']) == 0) echo ' hidden'; ?>" style="margin-left: 80px;">Įvertinimas</div>
+				<div class="labelLeft<?php if(empty($data['instruktoriaus_atsiliepimai']) || sizeof($data['instruktoriaus_atsiliepimai']) == 0) echo ' hidden'; ?>">Komentaras</div>
+				<div class="labelLeft<?php if(empty($data['instruktoriaus_atsiliepimai']) || sizeof($data['instruktoriaus_atsiliepimai']) == 0) echo ' hidden'; ?>" style="margin-left: 80px;">Data</div>
+				<div class="float-clear"></div>
+
+                <div class="childRow hidden">
+                    <select class="elementSelector" name="moksleiviai[]" disabled="disabled">
+                        <option value=""></option>
+                        <?php
+                            $students = $studentsObj->getStudentList();
+                            foreach($students as $key => $val) {
+                                echo "<option value='{$val['id']}'>{$val['vardas']} {$val['pavarde']}</option>";
+                            }
+                        ?>
+                    </select>
+                    <select class="elementSelector" name="ivertinimai[]" disabled="disabled">
+                        <option value=""></option>
+                        <?php
+                            for ($i = 1; $i <= 5; $i++) {
+                                echo "<option value='{$i}'>{$i}</option>";
+                            }
+                        ?>
+                    </select>
+                    <input type="text" name="komentarai[]" class="textbox textbox-150" value="" disabled="disabled" />
+                    <input type="text" name="datos[]" class="textbox datetime textbox-150" value="" disabled="disabled" />
+                    <input type="hidden" name="ids[]" value="0" disabled="disabled" />
+                    <a href="#" title="" class="removeChild">šalinti</a>
+                </div>
+                <div class="float-clear"></div>
+
+				<?php
+					if (!empty($data['instruktoriaus_atsiliepimai']) && sizeof($data['instruktoriaus_atsiliepimai']) > 0) {
+						foreach($data['instruktoriaus_atsiliepimai'] as $key => $val) {
+				?>
+						<div class="childRow">
+                            <select class="elementSelector" name="moksleiviai[]">
+                                <option value=""></option>
+                                <?php
+                                    $students = $studentsObj->getStudentList();
+                                    foreach($students as $key2 => $val2) {
+                                        $selected = "";
+                                        if(isset($val['fk_MOKSLEIVIS_id']) && $val['fk_MOKSLEIVIS_id'] == $val2['id']) {
+                                            $selected = " selected='selected'";
+                                        }
+                                        echo "<option{$selected} value='{$val2['id']}'>{$val2['vardas']} {$val2['pavarde']}</option>";
+                                    }
+                                ?>
+                            </select>
+                            <select class="elementSelector" name="ivertinimai[]">
+                                <option value=""></option>
+                                <?php
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        $selected = "";
+                                        if(isset($val['ivertinimas']) && $val['ivertinimas'] == $i) {
+                                            $selected = " selected='selected'";
+                                        }
+                                        echo "<option{$selected} value='{$i}'>{$i}</option>";
+                                    }
+                                ?>
+                            </select>
+							<input type="text" name="komentarai[]" class="textbox textbox-150" value="<?php echo isset($val['komentaras']) ? $val['komentaras'] : ''; ?>" />
+							<input type="text" name="datos[]" class="textbox datetime textbox-150" value="<?php echo isset($val['data']) ? $val['data'] : ''; ?>" />
+                            <input type="hidden" name="ids[]" value="<?php echo $val['id']; ?>" />
+                            <?php
+                            if (isset($val['id']) && $val['id'] != '0') {
+                            ?>
+							<a href="#" title="" onclick="showConfirmDialog3('review', '<?= $data['id'] ?>', '<?= $val['id'] ?>')">šalinti</a>
+                            <?php
+                            } else {
+                            ?>
+                            <a href="#" title="" class="removeChild">šalinti</a>
+                            <?php
+                            }
+                            ?>
+						</div>
+						<div class="float-clear"></div>
+				<?php
+						}
+					}
+				?>
+			</div>
+			<p id="newItemButtonContainer">
+				<a href="#" title="" class="addChild">Pridėti</a>
+			</p>
+		</fieldset>
+
 		<p class="required-note">* pažymėtus laukus užpildyti privaloma</p>
 		<p>
 			<input type="submit" class="submit button" name="submit" value="Išsaugoti">

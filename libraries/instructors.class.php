@@ -6,12 +6,14 @@ class instructors {
 	private $filialai_lentele = '';
 	private $atsiliepimai_lentele = '';
 	private $uzsiemimai_lentele = '';
+	private $moksleiviai_lentele = '';
 
 	public function __construct() {
 		$this->instruktoriai_lentele = 'INSTRUKTORIAI';
 		$this->filialai_lentele = 'FILIALAI';
 		$this->atsiliepimai_lentele = 'ATSILIEPIMAI';
 		$this->uzsiemimai_lentele = 'UZSIEMIMAI';
+		$this->moksleiviai_lentele = 'MOKSLEIVIAI';
 	}
 
 	public function getInstructor($id) {
@@ -51,6 +53,15 @@ class instructors {
 		return $data;
 	}
 
+	public function getReviews($instructorId) {
+		$query = "  SELECT *
+					FROM `{$this->atsiliepimai_lentele}`
+					WHERE `fk_INSTRUKTORIUS_id`='{$instructorId}'";
+		$data = mysql::select($query);
+
+		return $data;
+	}
+
 	public function getInstructorListCount() {
 		$query = "  SELECT COUNT(`id`) as `kiekis`
 					FROM {$this->instruktoriai_lentele}";
@@ -85,6 +96,8 @@ class instructors {
 									'{$data['fk_FILIALAS_id']}'
 								)";
 		mysql::query($query);
+
+		return mysql::getLastInsertedId();
 	}
 
 	public function updateInstructor($data) {
@@ -102,9 +115,55 @@ class instructors {
 		mysql::query($query);
 	}
 
+	public function updateReviews($data, $instructorId = null) {
+	    if ($instructorId != null) {
+	        $data['id'] = $instructorId;
+        }
+
+	    if (!isset($data['ids']) || sizeof($data['ids']) == 0
+            || !isset($data['moksleiviai']) || sizeof($data['moksleiviai']) != sizeof($data['ids'])
+            || !isset($data['ivertinimai']) || sizeof($data['ivertinimai']) != sizeof($data['ids'])
+            || !isset($data['komentarai']) || sizeof($data['komentarai']) != sizeof($data['ids'])
+            || !isset($data['datos']) || sizeof($data['datos']) != sizeof($data['ids'])) {
+	        return;
+        }
+
+	    foreach($data['ids'] as $key => $val) {
+            $query = "  INSERT INTO {$this->atsiliepimai_lentele}
+                                    (
+                                        `id`,
+                                        `ivertinimas`,
+                                        `komentaras`,
+                                        `data`,
+                                        `fk_INSTRUKTORIUS_id`,
+                                        `fk_MOKSLEIVIS_id`
+                                    )
+                                    VALUES
+                                    (
+                                        " . ($val != '0' ? "'{$val}'" : 'null') . ",
+                                        '{$data['ivertinimai'][$key]}',
+                                        '{$data['komentarai'][$key]}',
+                                        '{$data['datos'][$key]}',
+                                        '{$data['id']}',
+                                        '{$data['moksleiviai'][$key]}'
+                                    )
+                        ON DUPLICATE KEY UPDATE `ivertinimas`='{$data['ivertinimai'][$key]}',
+                                                  `komentaras`='{$data['komentarai'][$key]}',
+                                                  `data`='{$data['datos'][$key]}',
+                                                  `fk_MOKSLEIVIS_id`='{$data['moksleiviai'][$key]}'";
+            mysql::query($query);
+        }
+	}
+
 	public function deleteInstructor($id) {
 		$query = "  DELETE FROM {$this->instruktoriai_lentele}
 					WHERE `id`='{$id}'";
+		mysql::query($query);
+	}
+
+	public function deleteReview($reviewId) {
+		$query = "  DELETE FROM {$this->atsiliepimai_lentele}
+					WHERE `id`='{$reviewId}'";
 		mysql::query($query);
 	}
 
