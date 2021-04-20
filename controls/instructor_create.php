@@ -37,7 +37,7 @@ if(!empty($_POST['submit'])) {
 		'adresas' => 'anything',
 		'aprasymas' => 'anything',
 		'darbo_pradzios_data' => 'date',
-		'vairavimo_stazas' => 'int',
+		'vairavimo_stazas' => 'positivenumber',
 		'fk_FILIALAS_id' => 'int',
         'ids' => 'int',
         'moksleiviai' => 'int',

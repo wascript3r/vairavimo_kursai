@@ -28,8 +28,8 @@ if(!empty($_POST['submit'])) {
 		'adresas' => 'anything',
 		'kontaktinis_tel' => 'phone',
         'valstybiniai_nr' => 'alfanum',
-        'metai' => 'int',
-        'ridos' => 'int',
+        'metai' => 'positivenumber',
+        'ridos' => 'positivenumber',
         'isigijimo_datos' => 'date',
         'pavaru_dezes' => 'int',
         'markes' => 'int'
