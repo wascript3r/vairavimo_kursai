@@ -18,7 +18,8 @@ if(empty($_POST['submit'])) {
 	$validations = array (
 		'dataNuo' => 'date',
 		'dataIki' => 'date',
-        'tipas' => 'int'
+        'tipas' => 'int',
+        'rikiavimas' => 'int'
 	);
 
 	// sukuriame validatoriaus objektą
@@ -30,7 +31,7 @@ if(empty($_POST['submit'])) {
 		$data = $validator->preparePostFieldsForSQL();
 		
 		// išrenkame ataskaitos duomenis
-		$contractData = $contractsObj->getStudentContracts($data['dataNuo'], $data['dataIki'], $data['tipas'], $data['busena']);
+		$contractData = $contractsObj->getStudentContracts($data['dataNuo'], $data['dataIki'], $data['tipas'], $data['busena'], $data['rikiavimas']);
 
 		// rodome ataskaitą
 		include 'templates/contract_report_show.tpl.php';

@@ -118,7 +118,7 @@ class contracts {
 		mysql::query($query);
 	}
 
-	public function getStudentContracts($dateFrom, $dateTo, $type, $status) {
+	public function getStudentContracts($dateFrom, $dateTo, $type, $status, $sort) {
 	    $contractFilter = '';
 
 	    if (!empty($dateFrom)) {
@@ -152,6 +152,11 @@ class contracts {
             } else {
 	            $contractFilter .= "(pasirasymo_data IS NULL OR busena = 1)";
             }
+        }
+
+	    $order = 'ASC';
+	    if (!empty($sort) && $sort == 2) {
+	        $order = 'DESC';
         }
 
         $query = "
@@ -231,7 +236,7 @@ class contracts {
                     FROM {$this->sutartys_lentele}
                     {$contractFilter}
                 )
-            ) a ORDER BY moksleivio_id, sutarties_id ASC
+            ) a ORDER BY moksleivis {$order}, moksleivio_id ASC, sutarties_id ASC
         ";
         $data = mysql::select($query);
 

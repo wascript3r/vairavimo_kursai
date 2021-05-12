@@ -56,13 +56,41 @@
 			}
 		?>
 		</span>
+        <li style="margin-top: 5px;">Rikiuoti pagal:
+		<span>
+		<?php
+			if (!empty($data['rikiavimas'])) {
+				$contractStatuses = [
+                    1 => 'vardą pavardę - didėjančiai',
+                    2 => 'vardą pavardę - mažėjančiai'
+                ];
+                foreach ($contractStatuses as $key => $val) {
+                    if ($key == $data['rikiavimas']) {
+                        echo $val;
+                        break;
+                    }
+                }
+			} else {
+				echo "nenurodyta";
+			}
+		?>
+		</span>
 	</li>
 </ul>
 
 
 
 <?php
-	if(sizeof($contractData) > 1) { ?>
+	if(sizeof($contractData) > 1) {
+	    if ($data['rikiavimas'] == 2) {
+	        $tmp = [];
+	        $tmp[0] = $contractData[sizeof($contractData) - 1];
+	        for ($i = 1; $i < sizeof($contractData); $i++) {
+	            $tmp[$i] = $contractData[$i - 1];
+            }
+	        $contractData = $tmp;
+        }
+?>
 		<table class="reportTable">
 			<tr>
 				<th>Sutartis</th>

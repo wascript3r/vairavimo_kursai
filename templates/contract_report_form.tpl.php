@@ -25,11 +25,18 @@
 				</select>
             </p>
             <p>
-                <label class="field" for="tipas">Sutarties būsena</label>
+                <label class="field" for="busena">Sutarties būsena</label>
 				<select id="busena" name="busena">
 					<option value="">---------------</option>
 					<option value='1'>apmokėta</option>
 					<option value='2'>neapmokėta</option>
+				</select>
+            </p>
+            <p>
+                <label class="field" for="rikiavimas">Rikiuoti pagal</label>
+				<select id="rikiavimas" name="rikiavimas">
+					<option value='1'>vardą pavardę - didėjančiai</option>
+					<option value='2'>vardą pavardę - mažėjančiai</option>
 				</select>
             </p>
 		</fieldset>
