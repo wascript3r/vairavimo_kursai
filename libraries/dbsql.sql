@@ -6,6 +6,7 @@ SELECT * FROM (
             CONCAT(m.vardas, " ", m.pavarde) AS moksleivis,
             DATE(s.sudarymo_data) AS sudarymo_data,
             IFNULL(s.pasirasymo_data, "nepasirašyta") AS pasirasymo_data,
+            st.name AS tipas,
             sb.name AS busena,
             IF(
                 instruktoriaus_vardas IS NOT NULL AND instruktoriaus_pavarde IS NOT NULL,
@@ -24,6 +25,7 @@ SELECT * FROM (
             FROM SUTARTYS
             GROUP BY fk_MOKSLEIVIS_id
         ) sg ON sg.fk_MOKSLEIVIS_id = s.fk_MOKSLEIVIS_id
+        INNER JOIN sutarties_tipai st ON st.id_sutarties_tipai = s.tipas
         INNER JOIN sutarties_busenos sb ON sb.id_sutarties_busenos = s.busena
         LEFT JOIN (
             SELECT
@@ -42,7 +44,7 @@ SELECT * FROM (
     UNION ALL
     (
         SELECT
-            NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
             COUNT(id) AS sutarciu_kiekis,
             SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0)) AS kainu_suma
         FROM SUTARTYS
