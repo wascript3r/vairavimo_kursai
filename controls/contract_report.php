@@ -3,6 +3,9 @@
 include 'libraries/contracts.class.php';
 $contractsObj = new contracts();
 
+include 'libraries/contract_types.class.php';
+$contractTypesObj = new contractTypes();
+
 $formErrors = null;
 $fields = array();
 
@@ -14,7 +17,8 @@ if(empty($_POST['submit'])) {
 	// nustatome laukų validatorių tipus
 	$validations = array (
 		'dataNuo' => 'date',
-		'dataIki' => 'date'
+		'dataIki' => 'date',
+        'tipas' => 'int'
 	);
 
 	// sukuriame validatoriaus objektą
@@ -26,7 +30,7 @@ if(empty($_POST['submit'])) {
 		$data = $validator->preparePostFieldsForSQL();
 		
 		// išrenkame ataskaitos duomenis
-		$contractData = $contractsObj->getStudentContracts($data['dataNuo'], $data['dataIki']);
+		$contractData = $contractsObj->getStudentContracts($data['dataNuo'], $data['dataIki'], $data['tipas'], $data['busena']);
 
 		// rodome ataskaitą
 		include 'templates/contract_report_show.tpl.php';

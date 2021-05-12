@@ -1,7 +1,7 @@
 <ul id="reportInfo">
 	<li class="title">Sudarytų sutarčių ataskaita</li>
 	<li>Sudarymo data: <span><?php echo date("Y-m-d"); ?></span></li>
-	<li>Sutarčių sudarymo laikotarpis:
+	<li style="margin-top: 5px;">Sutarčių sudarymo laikotarpis:
 		<span>
 		<?php
 			if(!empty($data['dataNuo'])) {
@@ -20,12 +20,49 @@
 		?>
 		</span>
 	</li>
+    <li style="margin-top: 5px;">Sutarties tipas:
+		<span>
+		<?php
+			if (!empty($data['tipas'])) {
+				$contractTypes = $contractTypesObj->getContractTypeList();
+                foreach ($contractTypes as $key => $val) {
+                    if ($val['id'] == $data['tipas']) {
+                        echo $val['name'];
+                        break;
+                    }
+                }
+			} else {
+				echo "nenurodyta";
+			}
+		?>
+		</span>
+	</li>
+    <li style="margin-top: 5px;">Sutarties būsena:
+		<span>
+		<?php
+			if (!empty($data['busena'])) {
+				$contractStatuses = [
+                    1 => 'apmokėta',
+                    2 => 'neapmokėta'
+                ];
+                foreach ($contractStatuses as $key => $val) {
+                    if ($key == $data['busena']) {
+                        echo $val;
+                        break;
+                    }
+                }
+			} else {
+				echo "nenurodyta";
+			}
+		?>
+		</span>
+	</li>
 </ul>
 
 
 
 <?php
-	if(sizeof($contractData) > 0) { ?>
+	if(sizeof($contractData) > 1) { ?>
 		<table class="reportTable">
 			<tr>
 				<th>Sutartis</th>
@@ -65,15 +102,15 @@
                         }
 
 						echo 
-							"<tr class='aggregate'>"
-								. "<td colspan='2' style='text-align: right;'>"
+							"<tr><td colspan='6'><hr></td></tr><tr class='aggregate'>"
+								. "<td colspan='3' style='text-align: right;'>"
                                 . "Pasirinktas instruktorius:<br>"
-                                . "Paliktų atsiliepimų įvertinimų vidurkis:</td>"
-								. "<td colspan='3' style='text-align: left;'>"
+                                . "Moksleivio paliktų atsiliepimų įvertinimų vidurkis:</td>"
+								. "<td colspan='2' style='text-align: left;'>"
                                 . "<span style='{$style1}'>{$contractData[$i]['instruktorius']}</span><br>"
                                 . "<span style='{$style2}'>{$contractData[$i]['ivertinimu_vidurkis']}</span></td>"
 								. "<td class='border'>{$contractData[$i]['kainu_suma']} &euro;<br>(sutarčių kiekis: {$contractData[$i]['sutarciu_kiekis']})</td>"
-							. "</tr>";
+							. "</tr><tr><td colspan='6'><br></td></tr>";
 					}
 				}
 			?>
@@ -92,10 +129,10 @@
 
                 echo
                     "<tr class='aggregate'>"
-                        . "<td colspan='2' style='text-align: right;'>"
-                        . "Paliktų atsiliepimų įvertinimų vidurkis:</td>"
-                        . "<td colspan='3' style='text-align: left;'>"
-                        . "<span style='{$style2}'>{$contractData[0]['ivertinimu_vidurkis']}</span></td>"
+                        . "<td colspan='3' style='text-align: right;'>"
+                        . "Moksleivių paliktų atsiliepimų įvertinimų vidurkis:</td>"
+                        . "<td colspan='2' style='text-align: left;'>"
+                        . "<span style='{$style3}'>{$contractData[0]['ivertinimu_vidurkis']}</span></td>"
                         . "<td class='border'>{$contractData[0]['kainu_suma']} &euro;<br>(sutarčių kiekis: {$contractData[0]['sutarciu_kiekis']})</td>"
                     . "</tr>";
             ?>
@@ -105,7 +142,7 @@
 	} else {
 ?>
 		<div class="warningBox">
-			Nurodytu laikotartpiu sutarčių sudaryta nebuvo.
+			Pagal nustatytus kriterijus sutarčių nerasta.
 		</div>
 <?php
 	}

@@ -118,7 +118,42 @@ class contracts {
 		mysql::query($query);
 	}
 
-	public function getStudentContracts($dateFrom, $dateTo) {
+	public function getStudentContracts($dateFrom, $dateTo, $type, $status) {
+	    $contractFilter = '';
+
+	    if (!empty($dateFrom)) {
+	        $contractFilter = "WHERE DATE(sudarymo_data) >= '{$dateFrom}'";
+
+	        if (!empty($dateTo)) {
+	            $contractFilter .= " AND DATE(sudarymo_data) <= '{$dateTo}'";
+            }
+        } elseif (!empty($dateTo)) {
+	        $contractFilter = "WHERE DATE(sudarymo_data) <= '{$dateTo}'";
+        }
+
+	    if (!empty($type)) {
+	        if ($contractFilter == '') {
+	            $contractFilter = "WHERE ";
+            } else {
+	            $contractFilter .= " AND ";
+            }
+	        $contractFilter .= "tipas = {$type}";
+        }
+
+	    if (!empty($status) && ($status == 1 || $status == 2)) {
+	        if ($contractFilter == '') {
+	            $contractFilter = "WHERE ";
+            } else {
+	            $contractFilter .= " AND ";
+            }
+
+	        if ($status == 1) {
+                $contractFilter .= "(pasirasymo_data IS NOT NULL AND busena != 1)";
+            } else {
+	            $contractFilter .= "(pasirasymo_data IS NULL OR busena = 1)";
+            }
+        }
+
         $query = "
             SELECT * FROM (
                 (
@@ -145,8 +180,9 @@ class contracts {
                         SELECT
                             fk_MOKSLEIVIS_id,
                             COUNT(id) AS sutarciu_kiekis,
-                            SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0)) AS kainu_suma
+                            SUM(suma) AS kainu_suma
                         FROM {$this->sutartys_lentele}
+                        {$contractFilter}
                         GROUP BY fk_MOKSLEIVIS_id
                     ) sg ON sg.fk_MOKSLEIVIS_id = s.fk_MOKSLEIVIS_id
                     INNER JOIN {$this->sutarties_tipai_lentele} st ON st.id_sutarties_tipai = s.tipas
@@ -171,15 +207,29 @@ class contracts {
                         FROM {$this->atsiliepimai_lentele}
                         GROUP BY fk_MOKSLEIVIS_id
                     ) ag ON ag.fk_MOKSLEIVIS_id = s.fk_MOKSLEIVIS_id
+                    {$contractFilter}
                 )
                 UNION ALL
                 (
                     SELECT
                         NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-                        (SELECT ROUND(AVG(ivertinimas), 1) FROM {$this->atsiliepimai_lentele}) AS ivertinimu_vidurkis,
+                        IFNULL((
+                            SELECT
+                                ROUND(AVG(ivertinimas), 1)
+                            FROM {$this->atsiliepimai_lentele} a
+                            INNER JOIN (
+                                SELECT
+                                    fk_MOKSLEIVIS_id
+                                FROM {$this->sutartys_lentele}
+                                {$contractFilter}
+                                GROUP BY fk_MOKSLEIVIS_id
+                            ) s ON s.fk_MOKSLEIVIS_id = a.fk_MOKSLEIVIS_id
+                            {$contractFilter}
+                        ), 'nėra duomenų') AS ivertinimu_vidurkis,
                         COUNT(id) AS sutarciu_kiekis,
-                        SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0)) AS kainu_suma
+                        SUM(suma) AS kainu_suma
                     FROM {$this->sutartys_lentele}
+                    {$contractFilter}
                 )
             ) a ORDER BY moksleivio_id, sutarties_id ASC
         ";

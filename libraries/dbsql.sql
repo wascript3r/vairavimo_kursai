@@ -23,7 +23,7 @@ SELECT * FROM (
             SELECT
                 fk_MOKSLEIVIS_id,
                 COUNT(id) AS sutarciu_kiekis,
-                SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0)) AS kainu_suma
+                SUM(suma) AS kainu_suma
             FROM SUTARTYS
             GROUP BY fk_MOKSLEIVIS_id
         ) sg ON sg.fk_MOKSLEIVIS_id = s.fk_MOKSLEIVIS_id
@@ -54,9 +54,13 @@ SELECT * FROM (
     (
         SELECT
             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-            (SELECT ROUND(AVG(ivertinimas), 1) FROM ATSILIEPIMAI) AS ivertinimu_vidurkis,
+            IFNULL((
+                SELECT
+                    ROUND(AVG(ivertinimas), 1)
+                FROM ATSILIEPIMAI
+            ), 'nėra duomenų') AS ivertinimu_vidurkis,
             COUNT(id) AS sutarciu_kiekis,
-            SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0)) AS kainu_suma
+            SUM(suma) AS kainu_suma
         FROM SUTARTYS
     )
 ) a ORDER BY moksleivio_id, sutarties_id ASC
