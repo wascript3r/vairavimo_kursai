@@ -3,10 +3,15 @@ SELECT * FROM (
         SELECT
             s.id AS sutarties_id,
             s.fk_MOKSLEIVIS_id AS moksleivio_id,
-            m.vardas,
-            m.pavarde,
+            CONCAT(m.vardas, " ", m.pavarde) AS moksleivis,
             DATE(s.sudarymo_data) AS sudarymo_data,
-            IFNULL( s.pasirasymo_data, "nepasirašyta" ) AS pasirasymo_data,
+            IFNULL(s.pasirasymo_data, "nepasirašyta") AS pasirasymo_data,
+            sb.name AS busena,
+            IF(
+                instruktoriaus_vardas IS NOT NULL AND instruktoriaus_pavarde IS NOT NULL,
+                CONCAT(instruktoriaus_vardas, " ", instruktoriaus_pavarde),
+                "dar nepasirinktas"
+            ) AS instruktorius,
             sutarciu_kiekis,
             kainu_suma
         FROM SUTARTYS s
@@ -15,17 +20,31 @@ SELECT * FROM (
             SELECT
                 fk_MOKSLEIVIS_id,
                 COUNT(id) AS sutarciu_kiekis,
-                SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0 )) AS kainu_suma
+                SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0)) AS kainu_suma
             FROM SUTARTYS
             GROUP BY fk_MOKSLEIVIS_id
         ) sg ON sg.fk_MOKSLEIVIS_id = s.fk_MOKSLEIVIS_id
+        INNER JOIN sutarties_busenos sb ON sb.id_sutarties_busenos = s.busena
+        LEFT JOIN (
+            SELECT
+                fk_MOKSLEIVIS_id,
+                i.vardas AS instruktoriaus_vardas,
+                i.pavarde AS instruktoriaus_pavarde
+            FROM UZSIEMIMAI u
+            INNER JOIN (
+                SELECT MAX(id) AS max_id
+                FROM UZSIEMIMAI
+                GROUP BY fk_MOKSLEIVIS_id
+            ) uu ON uu.max_id = u.id
+            INNER JOIN INSTRUKTORIAI i ON i.id = u.fk_INSTRUKTORIUS_id
+        ) ug ON ug.fk_MOKSLEIVIS_id = s.fk_MOKSLEIVIS_id
     )
     UNION ALL
     (
         SELECT
-            NULL, NULL, NULL, NULL, NULL, NULL,
-            COUNT(id) AS bendras_sutarciu_kiekis,
-            SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0)) AS bendra_kainu_suma
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+            COUNT(id) AS sutarciu_kiekis,
+            SUM(IF(pasirasymo_data IS NOT NULL AND busena != 1, suma, 0)) AS kainu_suma
         FROM SUTARTYS
     )
 ) a ORDER BY moksleivio_id ASC
